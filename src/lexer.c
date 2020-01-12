@@ -1,9 +1,9 @@
 /********************************************************************
  * 
  * @author Mr Dk.
- * @version 2020/01/10
+ * @version 2020/01/16
  * 
- * 
+ * Split input command into tokens.
  * 
  * 
  ********************************************************************/
@@ -21,40 +21,47 @@ int generate_token(char cmd[], char *tokens[], int max_token_count) {
     char *worker = cmd;
     int token_len = 0;
 
-    printf("%s\n", cmd);
-
+    /* not reaching the end of the command */
     while (*worker != '\0') {
-        while (is_blank(worker)) {
+        while (find_blank(worker)) {
+            /* skip the blank */
             worker++;
         }
-        if (token_len = is_operator(worker)) {
+        if (token_len = find_operator(worker)) {
+            /* valid operator */
             if (count >= max_token_count ||
                 (tokens[count] = (char *) malloc(token_len + 1)) == NULL) {
+                /* failed to allocate memory for token */
                 return -1;
             }
-            printf("operator\n");
+            /* copy the operator to the token set */
             strncat(tokens[count], worker, token_len);
             count++;
             worker += token_len;
             continue;
         }
-        if (token_len = is_str(worker)) {
+        if (token_len = find_str(worker)) {
+            /* a valid string */
             if (count >= max_token_count ||
                 (tokens[count] = (char *) malloc(token_len + 1)) == NULL)
             {
                 return -1;
             }
+            /* copy the string to the token set */
+            /* skip the quote */
             strncat(tokens[count], worker + 1, token_len - 2);
             count++;
             worker += token_len;
             continue;
         }
-        if (token_len = is_token(worker)) {
+        if (token_len = find_token(worker)) {
+            /* a valid token */
             if (count >= max_token_count ||
                 (tokens[count] = (char *) malloc(token_len + 1)) == NULL)
             {
                 return -1;
             }
+            /* copy the token to the token set */
             strncat(tokens[count], worker, token_len);
             count++;
             worker += token_len;
@@ -65,14 +72,14 @@ int generate_token(char cmd[], char *tokens[], int max_token_count) {
     return count;
 }
 
-int is_blank(char *worker) {
+int find_blank(char *worker) {
     if (*worker == ' ') {
         return 1;
     }
     return 0;
 }
 
-int is_operator(char *worker) {
+int find_operator(char *worker) {
     if (*worker == '|') {
         return 1;
     }
@@ -85,7 +92,7 @@ int is_operator(char *worker) {
     return 0;
 }
 
-int is_str(char *worker) {
+int find_str(char *worker) {
     if (*worker == '\'' || *worker == '"') {
         char *search = worker + 1;
         while (*search) {
@@ -98,11 +105,12 @@ int is_str(char *worker) {
     return 0;
 }
 
-int is_token(char *worker) {
+int find_token(char *worker) {
     if (*worker > 32 && *worker < 127) {
         char *search = worker + 1;
         while (*search) {
-            if (*search > 32 && *search < 127 && !is_operator(search)) {
+            if (*search > 32 && *search < 127 && !find_operator(search)) {
+                /* 33-126 are ASCII code for characters can be displayed */
                 search++;
                 continue;
             }
