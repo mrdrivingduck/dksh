@@ -14,7 +14,7 @@ int main() {
 		}
 		printf("%s\n", tokens[i]);
 	}
-	clean_tokens(tokens);
+	clean_up_tokens(tokens);
 
 	return 0;
 }

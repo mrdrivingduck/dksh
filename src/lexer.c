@@ -1,12 +1,13 @@
 /********************************************************************
  * 
  * @author Mr Dk.
- * @version 2020/01/16
+ * @version 2020/01/21
  * 
  * Split input command into tokens.
  * 
  * 
  ********************************************************************/
+
 
 #include <stdlib.h>
 #include <string.h>
@@ -16,18 +17,18 @@
 #define PASS 1
 #define NOTPASS 0
 
-int generate_token(char cmd[], char *tokens[], int max_token_count) {
+int generate_token(char command[], char *tokens[], int max_token_count) {
     int count = 0;
-    char *worker = cmd;
+    char *worker = command;
     int token_len = 0;
 
     /* not reaching the end of the command */
     while (*worker != '\0') {
-        while (find_blank(worker)) {
+        while (consume_blank(worker)) {
             /* skip the blank */
             worker++;
         }
-        if (token_len = find_operator(worker)) {
+        if ((token_len = consume_operator(worker))) {
             /* valid operator */
             if (count >= max_token_count ||
                 (tokens[count] = (char *) malloc(token_len + 1)) == NULL) {
@@ -40,7 +41,7 @@ int generate_token(char cmd[], char *tokens[], int max_token_count) {
             worker += token_len;
             continue;
         }
-        if (token_len = find_str(worker)) {
+        if ((token_len = consume_string(worker))) {
             /* a valid string */
             if (count >= max_token_count ||
                 (tokens[count] = (char *) malloc(token_len + 1)) == NULL)
@@ -54,7 +55,7 @@ int generate_token(char cmd[], char *tokens[], int max_token_count) {
             worker += token_len;
             continue;
         }
-        if (token_len = find_token(worker)) {
+        if ((token_len = consume_token(worker))) {
             /* a valid token */
             if (count >= max_token_count ||
                 (tokens[count] = (char *) malloc(token_len + 1)) == NULL)
@@ -72,14 +73,14 @@ int generate_token(char cmd[], char *tokens[], int max_token_count) {
     return count;
 }
 
-int find_blank(char *worker) {
+int consume_blank(char *worker) {
     if (*worker == ' ') {
         return 1;
     }
     return 0;
 }
 
-int find_operator(char *worker) {
+int consume_operator(char *worker) {
     if (*worker == '|') {
         return 1;
     }
@@ -92,7 +93,7 @@ int find_operator(char *worker) {
     return 0;
 }
 
-int find_str(char *worker) {
+int consume_string(char *worker) {
     if (*worker == '\'' || *worker == '"') {
         char *search = worker + 1;
         while (*search) {
@@ -105,11 +106,11 @@ int find_str(char *worker) {
     return 0;
 }
 
-int find_token(char *worker) {
+int consume_token(char *worker) {
     if (*worker > 32 && *worker < 127) {
         char *search = worker + 1;
         while (*search) {
-            if (*search > 32 && *search < 127 && !find_operator(search)) {
+            if (*search > 32 && *search < 127 && !consume_operator(search)) {
                 /* 33-126 are ASCII code for characters can be displayed */
                 search++;
                 continue;
@@ -121,7 +122,7 @@ int find_token(char *worker) {
     return 0;
 }
 
-void clean_tokens(char *tokens[]) {
+void clean_up_tokens(char *tokens[]) {
     int i = 0;
     while (tokens[i] != NULL) {
         free(tokens[i]);
