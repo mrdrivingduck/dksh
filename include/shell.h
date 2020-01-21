@@ -7,3 +7,10 @@
  * 
  * 
  ********************************************************************/
+
+#ifndef _SHELL_
+#define _SHELL_
+
+int child_process_handler(char *tokens[], int token_count, int start_token);
+
+#endif
