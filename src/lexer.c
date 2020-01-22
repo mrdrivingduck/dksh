@@ -1,7 +1,7 @@
 /********************************************************************
  * 
  * @author Mr Dk.
- * @version 2020/01/21
+ * @version 2020/01/22
  * 
  * Split input command into tokens.
  * 
@@ -14,8 +14,6 @@
 #include <stdio.h>
 #include "lexer.h"
 
-#define PASS 1
-#define NOTPASS 0
 
 int generate_token(char command[], char *tokens[], int max_token_count) {
     int count = 0;
@@ -33,7 +31,7 @@ int generate_token(char command[], char *tokens[], int max_token_count) {
             if (count >= max_token_count ||
                 (tokens[count] = (char *) malloc(token_len + 1)) == NULL) {
                 /* failed to allocate memory for token */
-                return -1;
+                return OVERFLOW;
             }
             /* copy the operator to the token set */
             strncat(tokens[count], worker, token_len);
@@ -46,7 +44,7 @@ int generate_token(char command[], char *tokens[], int max_token_count) {
             if (count >= max_token_count ||
                 (tokens[count] = (char *) malloc(token_len + 1)) == NULL)
             {
-                return -1;
+                return OVERFLOW;
             }
             /* copy the string to the token set */
             /* skip the quote */
@@ -60,7 +58,7 @@ int generate_token(char command[], char *tokens[], int max_token_count) {
             if (count >= max_token_count ||
                 (tokens[count] = (char *) malloc(token_len + 1)) == NULL)
             {
-                return -1;
+                return OVERFLOW;
             }
             /* copy the token to the token set */
             strncat(tokens[count], worker, token_len);
@@ -68,6 +66,11 @@ int generate_token(char command[], char *tokens[], int max_token_count) {
             worker += token_len;
             continue;
         }
+        if (*worker == '\0') {
+            break;
+        }
+
+        return UNRECOGNIZED_CHAR;
     }
 
     return count;
