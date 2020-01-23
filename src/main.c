@@ -15,6 +15,6 @@
 int main() {
 
 	shell_core_loop();
-
+	
 	return 0;
 }

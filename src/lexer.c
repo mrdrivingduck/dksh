@@ -67,9 +67,14 @@ int generate_token(char command[], char *tokens[], int max_token_count) {
             continue;
         }
         if (*worker == '\0') {
+            /* reaching the end */
             break;
         }
 
+        /* if the token is recognized by any previous consumer */
+        /* the code here will not be executed */
+        /* if there is an unrecognized character */
+        /* the following return will terminate the parsing of command */
         return UNRECOGNIZED_CHAR;
     }
 
